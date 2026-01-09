@@ -1,0 +1,111 @@
+// See https://aka.ms/new-console-template for more information
+CurrentPotion currentPotion = new CurrentPotion();
+bool gameOver = false;
+while(!gameOver)
+{
+    Console.WriteLine($"You are having {currentPotion.potionType} potion rn.");
+    Console.WriteLine("There are 1:Stardust,2:SnakeVenom,3:DragonBreath,4:ShadowGlass,5:EyeshineGem available.");
+    string input=Console.ReadLine() ?? "";
+    Ingredient ingredient=input switch
+    {
+        "1" => Ingredient.Stardust,
+        "2" => Ingredient.SnakeVenom,
+        "3" => Ingredient.DragonBreath,
+        "4" => Ingredient.ShadowGlass,
+        "5" => Ingredient.EyeshineGem,
+        _ => Ingredient.Unknown
+    };
+    Console.WriteLine($"You picked {ingredient}.");
+    MakePotion(ingredient,currentPotion);
+    if(currentPotion.potionType!= PotionType.Ruined)
+    {
+        Console.WriteLine("Do you want to add another ingredient? (y/n)");
+        string continueInput=Console.ReadLine() ?? "n";
+        switch(continueInput.ToLower())
+        {
+            case "y":
+                gameOver=false;
+                break;
+            case "n":
+                gameOver=true;
+                break;
+            default:
+                gameOver=true;
+                break;
+        }
+    }
+    else
+    {
+        currentPotion.potionType=PotionType.Water;
+        continue;
+    }
+
+    
+}
+void Notify(CurrentPotion potion)
+    {
+        string Message=potion.potionType switch
+        {
+            PotionType.Elixir => "You have created an Elixir!",
+            PotionType.Poison => "You have created a Poison!",
+            PotionType.Flying => "You have created a Flying potion!",
+            PotionType.Invisibility => "You have created an Invisibility potion!",
+            PotionType.NightSight => "You have created a Night Sight potion!",
+            PotionType.CloudyBrew => "You have created a Cloudy Brew!",
+            PotionType.Wraith => "You have created a Wraith potion! You win!",
+            PotionType.Ruined => "Your potion is ruined! Game over!",
+            _ => ""
+        };
+        Console.WriteLine(Message);
+    }
+void MakePotion(Ingredient ingredient, CurrentPotion currentPotion)
+    {
+        switch(ingredient,currentPotion.potionType)
+        {
+            case (Ingredient.Stardust,PotionType.Water):
+                currentPotion.potionType=PotionType.Elixir;
+                Notify(currentPotion);
+                break;
+            case (Ingredient.SnakeVenom,PotionType.Elixir):
+                currentPotion.potionType=PotionType.Poison;
+                Notify(currentPotion);
+                break;
+            case (Ingredient.DragonBreath,PotionType.Elixir):
+                currentPotion.potionType=PotionType.Flying;
+                Notify(currentPotion);
+                break;
+            case (Ingredient.ShadowGlass,PotionType.Elixir):
+                currentPotion.potionType=PotionType.Invisibility;
+                Notify(currentPotion);
+                break;
+            case (Ingredient.EyeshineGem,PotionType.Elixir):
+                currentPotion.potionType=PotionType.NightSight;
+                Notify(currentPotion);
+                break;
+            case (Ingredient.ShadowGlass,PotionType.NightSight):
+                currentPotion.potionType=PotionType.CloudyBrew;
+                Notify(currentPotion);
+                break;
+            case (Ingredient.EyeshineGem,PotionType.Invisibility):
+                currentPotion.potionType=PotionType.CloudyBrew;
+                Notify(currentPotion);
+                break;
+            case (Ingredient.Stardust,PotionType.CloudyBrew):
+                currentPotion.potionType=PotionType.Wraith;
+                Notify(currentPotion);
+                break;
+            default:
+                currentPotion.potionType=PotionType.Ruined;
+                Notify(currentPotion);
+                break;
+        }
+    }
+
+class CurrentPotion
+{
+    public PotionType potionType {get;set;} = PotionType.Water;
+    public Ingredient AddedIngredient {get;set;}
+}
+
+public enum Ingredient{Stardust,SnakeVenom,DragonBreath,ShadowGlass,EyeshineGem,Unknown}
+public enum PotionType{Water, Elixir, Poison,Flying,Invisibility,NightSight,CloudyBrew,Wraith,Ruined}
